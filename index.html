@@ -585,7 +585,12 @@
                 width:240px; 
                 height: min(calc(100dvh - 120px), 680px); 
             }
-            .swimmer { left:94px; }
+            .swimmer { 
+                left:94px; 
+                width:46px; 
+                height:46px; 
+                font-size:34px; 
+            }
         }
     </style>
 </head>
@@ -1984,10 +1989,10 @@ startMinigame = function() {
     const SWIM_TARGET_TIME = 20000; // 20s
     const FALL_SPEED_BASE = 60; // DÜŞÜRÜLDÜ eski 90
     const FALL_SPEED_GROWTH = 0.4; // DÜŞÜRÜLDÜ eski 0.8
-    const ROW_INTERVAL_MIN = 900; // biraz seyrek
-    const ROW_INTERVAL_MAX = 1500; // biraz daha geniş aralık
-        const GAP_MIN = 55; // px
-        const GAP_MAX = 75; // px
+    const ROW_INTERVAL_MIN = 1300; // mobilde daha seyrek
+    const ROW_INTERVAL_MAX = 2000; // üst sınır arttı
+    const GAP_MIN = 65; // px (daha geniş)
+    const GAP_MAX = 90; // px
         let swimStart = null;
         let swimAnim = null;
         let swimRows = []; // {el, y, gapStart, gapWidth}
