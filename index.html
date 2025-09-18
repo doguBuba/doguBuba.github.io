@@ -538,16 +538,28 @@
             position: absolute;
             left: 120px;
             top: 120px; /* start near bottom */
-            width: 40px;
-            height: 40px;
+            width: 52px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            filter: drop-shadow(0 0 6px #fff59d);
+            font-size: 40px;
+            line-height: 1;
+            transform-origin: 50% 50%;
+            filter: drop-shadow(0 0 6px #fff59d) drop-shadow(0 0 4px #ffffff);
             transform: rotate(-90deg); /* yüzü yukarı baksın */
             transition: left 0.08s linear;
             pointer-events: none;
+            z-index: 10;
+        }
+        .swimmer::before { /* arka plan halo görünürlüğü artırır */
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.75), rgba(255,255,255,0) 70%);
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: -1;
         }
         .fall-row {
             position: absolute;
@@ -569,8 +581,11 @@
         .swim-timer { font-weight:bold; }
         .swim-instructions { font-size:10px; opacity:0.75; margin-top:4px; }
         @media (max-width:600px){
-            #swimGameScreen .swim-area { width:225px; height:300px; }
-            .swimmer { left:95px; }
+            #swimGameScreen .swim-area { 
+                width:240px; 
+                height: min(calc(100dvh - 120px), 680px); 
+            }
+            .swimmer { left:94px; }
         }
     </style>
 </head>
@@ -785,6 +800,33 @@
         function scrollToTopSmooth() {
             try { window.scrollTo({top:0, behavior:'smooth'}); } catch(e) { window.scrollTo(0,0); }
         }
+
+        // Emoji desteklenmezse veya görünmezse basit SVG fallback
+        document.addEventListener('DOMContentLoaded', () => {
+            const sw = document.getElementById('swimmer');
+            if (sw) {
+                // kısa süre sonra ölç (render sonrası)
+                requestAnimationFrame(()=>{
+                    if (sw.textContent.trim().length && sw.getBoundingClientRect().width < 10) {
+                        sw.innerHTML = '';
+                        sw.style.transform = 'none';
+                        sw.style.background = 'linear-gradient(135deg,#ffe082,#ffca28)';
+                        sw.style.border = '2px solid #fff8e1';
+                        sw.style.borderRadius = '50%';
+                        sw.style.boxShadow = '0 0 6px rgba(255,255,255,0.9)';
+                        const arm = document.createElement('div');
+                        arm.style.position='absolute';
+                        arm.style.width='60%';
+                        arm.style.height='6px';
+                        arm.style.background='#ffb300';
+                        arm.style.top='22px';
+                        arm.style.left='20%';
+                        arm.style.borderRadius='3px';
+                        sw.appendChild(arm);
+                    }
+                });
+            }
+        });
 
         const emotions = {
             happy: '<img src="happy.png" class="face-img" alt="Mutlu">',
