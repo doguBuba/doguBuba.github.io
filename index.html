@@ -141,6 +141,9 @@
             background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2ZmMDAwMCIvPjwvc3ZnPg==');
             background-size: cover;
             background-repeat: no-repeat;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 40px;
         }
         .modal-content {
             background-color: rgba(255, 255, 255, 0.95);
@@ -587,9 +590,9 @@
             }
             .swimmer { 
                 left:94px; 
-                width:38px; 
-                height:38px; 
-                font-size:28px; 
+                width:32px; 
+                height:32px; 
+                font-size:22px; 
             }
         }
     </style>
@@ -2154,10 +2157,12 @@ startMinigame = function() {
             cancelAnimationFrame(swimAnim);
             cleanupSwimControls();
             document.getElementById('swimResult').innerHTML='';
+            // alanı gizle ki diyalog yukarı gelsin
+            const areaEl = document.getElementById('swimArea');
+            if(areaEl) areaEl.style.display='none';
             dialogParts = [
-                {text:'Yukarı yüzüş ustalaştın.', emotion:'surprised'},
-                {text:'20 saniyeyi geçtiğini fark etmedin değil mi?', emotion:'angry'},
-                {text:'Tamam... son aşamaya geç bakalım.', emotion:'normal'}
+                {text:'Bunu da başardın.', emotion:'surprised'},
+                {text:'Tebrik ederim.', emotion:'normal'},
             ];
             currentPart = 0;
             document.getElementById('swimResult').innerHTML = `
@@ -2167,6 +2172,7 @@ startMinigame = function() {
                 </div>
                 <p class="click-text">tıkla</p>
             `;
+            scrollToTopSmooth();
         }
 
         function nextDialogSwim(){
@@ -2176,6 +2182,9 @@ startMinigame = function() {
                     <div class=\"dialog-box\" onclick=\"nextDialogSwim()\">\n                        <div class=\"face\">${emotions[dialogParts[currentPart].emotion]}</div>\n                        <p>${dialogParts[currentPart].text}</p>\n                    </div>\n                    <p class=\"click-text\">tıkla</p>
                 `;
             } else {
+                // yüzme alanını geri getir (tekrar oynanırsa) ve bellek oyununa geç
+                const areaEl = document.getElementById('swimArea');
+                if(areaEl) areaEl.style.display='block';
                 document.getElementById('swimGameScreen').style.display='none';
                 startMemoryGame();
             }
