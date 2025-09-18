@@ -1394,9 +1394,9 @@ startMinigame = function() {
                     <p class="click-text">Tıkla</p>
                 `;
             } else {
-                // Ülke oyunu bitti -> Hafıza oyunu başlat
+                // Ülke oyunu bitti -> Yüzme oyunu başlat
                 document.getElementById('countryScreen').style.display = 'none';
-                startMemoryGame();
+                startSwimGame();
             }
         }
 
@@ -1969,13 +1969,14 @@ startMinigame = function() {
             }, 1200);
         }
 
-        function memoryGameSuccess(){
+    function memoryGameSuccess(){
             clearInterval(memoryTimerInterval);
             const total = performance.now() - memoryStartTime;
             document.getElementById('memoryResult').textContent = `Başardın! Süre: ${(total/1000).toFixed(2)} sn`; 
             setTimeout(()=>{
                 document.getElementById('memoryScreen').style.display='none';
-                startSwimGame();
+        document.getElementById('finalScreen').style.display='block';
+        startFinalDialog();
             }, 1500);
         }
 
@@ -2171,8 +2172,7 @@ startMinigame = function() {
                 `;
             } else {
                 document.getElementById('swimGameScreen').style.display='none';
-                document.getElementById('finalScreen').style.display='block';
-                startFinalDialog();
+                startMemoryGame();
             }
         }
     </script>
