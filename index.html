@@ -2,79 +2,2121 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yaş Hesaplama</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Yaş Hesaplama - Kullanıcı Düşmanı Sürüm</title>
     <style>
+        .day-selector {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .number-display {
+            width: 80px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            border: 2px solid #00ff00;
+            font-size: 24px;
+            color: #0000ff;
+            background-color: #ffffff;
+            margin: 10px auto;
+            font-weight: bold;
+            animation: pulse 0.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .day-controls {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .day-controls button {
+            margin: 5px;
+            padding: 8px 15px;
+            width: auto;
+            height: auto;
+            font-size: 12px;
+        }
+        .btn-select {
+            display: inline-block;
+        }
+        .btn-retry {
+            display: none;
+        }
+        #selectedDayDisplay {
+            display: inline-block;
+            padding: 5px 10px;
+            border: 2px solid #00ff00;
+            background-color: #ffffff;
+            font-weight: bold;
+            margin: 5px;
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: Comic Sans MS, cursive;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            padding: 12px 8px 40px;
+            background-color: #ff00ff;
         }
+        /* shake animasyonu tamamen kaldırıldı */
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-        input[type="date"] {
+            background-color: #ffff00;
+            padding: 12px 14px 18px;
+            border-radius: 8px;
+            box-shadow: 0 0 30px #ff0000;
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
+            max-width: 360px;
+            text-align: left;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 6px 0 10px;
+            border: 3px solid #00ff00;
+            border-radius: 6px;
+            font-size: 15px;
+            color: #0000ff;
+            box-sizing: border-box;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 2px 0;
+        }
+        #yearValue {
+            display: block;
+            text-align: center;
+            font-size: 12px;
+            color: #0000ff;
         }
         button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
+            min-width: 54px;
+            min-height: 44px;
+            padding: 6px 14px;
+            background-color: #ff0000;
+            color: #ffffff;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             cursor: pointer;
         }
+    /* göz kırpma animasyonu kaldırıldı */
         button:hover {
-            background-color: #45a049;
+            background-color: #000000;
+            color: #ff00ff;
         }
         #result {
-            margin-top: 20px;
+            margin-top: 5px;
+            font-size: 8px;
+            font-weight: normal;
+            color: #ff0000;
+        }
+        label {
+            display: block;
+            margin-bottom: 1px;
+        }
+        h1 {
             font-size: 18px;
+            color: #0000ff;
+            text-align: center;
+            line-height: 1.2;
+            margin-top: 0;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2ZmMDAwMCIvPjwvc3ZnPg==');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .modal-content {
+            background-color: rgba(255, 255, 255, 0.95);
+            margin: 50px auto;
+            padding: 18px 18px 26px;
+            border: 1px solid #888;
+            width: 92%;
+            max-width: 420px;
+            text-align: center;
+            font-size: 15px;
+            border-radius: 10px;
+        }
+        .modal button {
+            margin: 5px;
+            padding: 10px;
+            width: auto;
+            height: auto;
+            font-size: 12px;
+        }
+        .gameover {
+            background-color: #000000;
+            color: #ffffff;
+            font-size: 24px;
             font-weight: bold;
+        }
+        .gameover button {
+            background-color: #ffffff;
+            color: #000000;
+            font-size: 16px;
+            padding: 15px;
+        }
+        .minigame input {
+            width: 100px;
+            margin: 10px;
+        }
+        .flag-container {
+            text-align: center;
+            margin: 20px 0;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 7-Segment Display Styles */
+        .display-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 18px 0;
+            background: #1a1a1a;
+            padding: 14px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 14px rgba(0,0,0,0.8);
+        }
+
+        .segment-display {
+            position: relative;
+            width: 44px;
+            height: 70px;
+            margin: 4px;
+        }
+
+        .segment {
+            position: absolute;
+            background: #333;
+        }
+
+        .segment.active {
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        .segment.horizontal {
+            width: 30px; /* çarpışmayı önlemek için daraltıldı */
+            height: 6px;
+            left: 7px; /* yeniden ortalama */
+        }
+
+        .segment.vertical {
+            width: 6px;
+            height: 20px; /* yatay segmentlerden 2px boşluk bırakır */
+        }
+
+    .segment.top { top: 2px; }
+    .segment.middle { top: 32px; }
+    .segment.bottom { top: 62px; } /* bottom yerine sabit top ile hizalama */
+    /* Dikey segmentler: üst grup 10px, alt grup 40px (20px yükseklik + 2px boşluklar) */
+    .segment.top-left { top: 10px; left: 4px; }
+    .segment.top-right { top: 10px; left: 34px; }
+    .segment.bottom-left { top: 40px; left: 4px; }
+    .segment.bottom-right { top: 40px; left: 34px; }
+
+        /* Attempt Indicator Mini Displays */
+        .attempts-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 5px 0 10px 0;
+        }
+        .attempt-square {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            background: #0d0d0d;
+            border-radius: 6px;
+            box-shadow: inset 0 0 6px #000;
+        }
+        .attempt-square .seg {
+            position: absolute;
+            background: #222;
+            transition: none !important;
+        }
+        .attempt-square .edge {
+            background: #222;
+        }
+        .attempt-square .diag {
+            width: 5px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+            transform-origin: center;
+            background: #111;
+        }
+        .attempt-square .diag1 { transform: translateX(-50%) rotate(45deg); }
+        .attempt-square .diag2 { transform: translateX(-50%) rotate(-45deg); }
+        .attempt-square .edge.top { top: 3px; left: 5px; right: 5px; height: 4px; width: auto; }
+        .attempt-square .edge.bottom { bottom: 3px; left: 5px; right: 5px; height: 4px; width: auto; }
+        .attempt-square .edge.left { left: 3px; top: 6px; bottom: 6px; width: 4px; height: auto; }
+        .attempt-square .edge.right { right: 3px; top: 6px; bottom: 6px; width: 4px; height: auto; }
+        .seg.active-fail { background: #ff2020 !important; box-shadow: 0 0 6px #ff2020; }
+        .seg.active-success { background: #ffeb3b !important; box-shadow: 0 0 6px #ffeb3b; }
+
+        /* Keypad Styles */
+        .keypad {
+            display: grid;
+            grid-template-rows: repeat(4, 1fr);
+            gap: 8px;
+            max-width: 260px;
+            margin: 12px auto 10px;
+        }
+
+        .keypad-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .key {
+            width: 70px;
+            height: 56px;
+            font-size: 22px;
+            font-weight: bold;
+            border: 2px solid #444;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #555, #333);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            opacity: 1 !important;
+            transition: background .15s ease;
+        }
+
+        .key:hover {
+            background: linear-gradient(145deg, #666, #444);
+            opacity: 1 !important;
+        }
+
+        .key:active {
+            background: linear-gradient(145deg, #444, #222);
+            opacity: 1 !important;
+        }
+
+        .key.clear {
+            background: linear-gradient(145deg, #d73027, #a50f15);
+        }
+
+        .key.clear:hover {
+            background: linear-gradient(145deg, #e85348, #c51b1b);
+        }
+
+        .key.enter {
+            background: linear-gradient(145deg, #2e7d32, #1b5e20);
+        }
+
+        .key.enter:hover {
+            background: linear-gradient(145deg, #43a047, #2e7d32);
+        }
+        .key:disabled {
+            opacity: 0.4 !important;
+            filter: grayscale(70%);
+            cursor: not-allowed;
+        }
+        #flagImage {
+            max-width: 120px;
+            max-height: 90px;
+            object-fit: contain;
+        }
+        .dialog-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background: #f9f9f9;
+            text-align: center;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .face {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+        .face-img {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 5px;
+        }
+        .click-text {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 150px;
+                font-size: 8px;
+            }
+            input {
+                width: 40px;
+                font-size: 6px;
+            }
+            button {
+                width: 25px;
+                height: 15px;
+                font-size: 5px;
+            }
+            .modal-content {
+                font-size: 10px;
+            }
+            .gameover {
+                font-size: 18px;
+            }
+            .day-controls button {
+                margin: 5px;
+                padding: 8px 15px;
+                width: auto;
+                height: auto;
+                font-size: 10px;
+            }
+            input[type="range"] {
+                width: 80%;
+            }
+        }
+        .friend-dialog-modal {
+            background-color: rgba(0, 0, 0, 0.7) !important;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .friend-dialog-content {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 15px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+            animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn {
+            from { 
+                transform: translateY(-50px) scale(0.8);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+        .friend-dialog-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .friend-dialog-box:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        .friend-dialog-subtitle {
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+        /* Memory Game Styles */
+        #memoryScreen .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(58px, 1fr));
+            grid-auto-rows: 58px;
+            grid-gap: 8px;
+            justify-content: center;
+            margin: 8px auto 14px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .memory-card {
+            width: 100%;
+            height: 100%;
+            background: #222;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            transition: background 0.2s ease, transform .12s ease;
+        }
+        .memory-card.revealed, .memory-card.matched {
+            background: #444;
+        }
+        .memory-card.matched {
+            background: #2e7d32;
+            box-shadow: 0 0 6px #2e7d32;
+        }
+        .memory-card span {
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .memory-card.revealed span, .memory-card.matched span {
+            opacity: 1;
+        }
+        .memory-info {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        .memory-timer-display {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            background:#111;
+            padding:10px 12px;
+            border-radius:8px;
+            box-shadow: inset 0 0 10px #000;
+            margin: 0 auto 8px auto;
+            width: max-content;
+        }
+        .small-7seg {
+            position: relative;
+            width: 24px;
+            height: 40px;
+        }
+        .small-7seg .seg7 {
+            position: absolute;
+            background:#222;
+        }
+        .small-7seg .seg7.on { background:#ff5722; box-shadow:0 0 6px #ff5722; }
+        .small-7seg .h { width:18px; height:4px; left:3px; }
+        .small-7seg .v { width:4px; height:12px; }
+        .small-7seg .a { top:2px; }
+        .small-7seg .d { bottom:2px; }
+        .small-7seg .g { top:18px; }
+        .small-7seg .f { top:6px; left:0; }
+        .small-7seg .b { top:6px; right:0; }
+        .small-7seg .e { bottom:6px; left:0; }
+        .small-7seg .c { bottom:6px; right:0; }
+        @media (max-width: 600px) {
+            #memoryScreen .memory-grid { grid-template-columns: repeat(4, 1fr); grid-auto-rows:54px; grid-gap:6px; }
+            .memory-card { font-size:26px; }
+            .segment-display { width:40px; height:60px; }
+            .key { width:64px; height:54px; font-size:20px; }
+        }
+        /* Swim Game Styles (Updated Flappy-style) */
+        #swimGameScreen .swim-area {
+            position: relative;
+            width: 270px; /* 9 */
+            height: 360px; /* 12 (portrait) */
+            margin: 10px auto;
+            background: linear-gradient(#0277bd 0%, #014f86 70%);
+            border: 3px solid #023e68;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 0 18px rgba(0,0,0,0.55);
+            touch-action: none; /* drag */
+            user-select: none;
+        }
+        .swimmer {
+            position: absolute;
+            left: 120px;
+            top: 120px; /* start near bottom */
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            filter: drop-shadow(0 0 6px #fff59d);
+            transform: rotate(-90deg); /* yüzü yukarı baksın */
+            transition: left 0.08s linear;
+            pointer-events: none;
+        }
+        .fall-row {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+        }
+        .fall-block {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(135deg,#ff5722,#d84315);
+            box-shadow: 0 0 6px rgba(0,0,0,0.6);
+            border-radius: 4px;
+        }
+        .fall-block.alt { background: linear-gradient(135deg,#ff1744,#c51162); }
+        .swim-ui { font-size:11px; margin-top:4px; }
+        .swim-timer { font-weight:bold; }
+        .swim-instructions { font-size:10px; opacity:0.75; margin-top:4px; }
+        @media (max-width:600px){
+            #swimGameScreen .swim-area { width:225px; height:300px; }
+            .swimmer { left:95px; }
         }
     </style>
 </head>
-<body>
+<body onload="loadDelay()">
     <div class="container">
-        <h1>Yaş Hesaplama</h1>
-        <label for="birthdate">Doğum Tarihinizi Girin:</label>
-        <input type="date" id="birthdate">
-        <button onclick="calculateAge()">Hesapla</button>
+        <h1>Yeni Yaşına Girenler İçin Yaş Hesaplama Programı</h1>
+        <label for="year">Yıl:</label>
+        <input type="range" id="year" min="1925" max="2025" value="1939" step="1">
+        <span id="yearValue">1939</span>
+        <label for="month">Ay</label>
+        <input type="number" id="month" placeholder="Ay" inputmode="numeric">
+        <label for="day">Gün:</label>
+        <div class="day-selector">
+            <div>Seçilen: <span id="selectedDayDisplay">-</span></div>
+            <div class="number-display" id="numberDisplay">15</div>
+            <div class="day-controls">
+                <button class="btn-select" onclick="selectDay()">Seç</button>
+                <button class="btn-retry" onclick="restartNumberGenerator()">Tekrar Dene</button>
+            </div>
+        </div>
+        <label for="fruit">En sevdiğin meyve?:</label>
+        <input type="text" id="fruit" placeholder="Meyve">
+        <label for="friend">En iyi arkadaşınız?:</label>
+        <input type="text" id="friend" placeholder="Arkadaş Adı">
+        <label for="color">Favori Renginiz?:</label>
+        <input type="text" id="color" placeholder="Renk">
+        <label for="captcha">Captcha: 'ben insanım yemin ederim' yaz:</label>
+        <input type="text" id="captcha" placeholder="Captcha">
+        <button onclick="showPopup()" disabled id="calcBtn">Hesapla</button>
         <div id="result"></div>
     </div>
 
+    <div id="popup" class="modal">
+        <div class="modal-content">
+            <p>Önüne girdiğiniz bilgilerin hatalı olması durumunda yaşanacaklardan firmamız sorumlu değildir. Doğru bilgileri girdiğinize emin misiniz?</p>
+            <button onclick="confirmCalculation()">Evet</button>
+            <button onclick="confirmCalculation()">Belki</button>
+            <button onclick="confirmCalculation()">Hayır</button>
+        </div>
+    </div>
+
+    <div id="gameover" class="modal">
+        <div class="modal-content gameover">
+            <p>KRİTİK HATA</p>
+            <p>Yaşınızı hesaplarken büyük bir problemle karşılaşıldı. Sistemi kalibre etmek için yardımınıza ihtiyacımız var.</p>
+            <button onclick="startMinigame()">Kalibre et (Lütfen)</button>
+        </div>
+    </div>
+
+    <div id="minigame" class="modal">
+        <div class="modal-content minigame">
+            <p>Sistemin şifresini gir (4 haneli)</p>
+            
+            <!-- 7-Segment Display -->
+            <div class="attempts-container">
+                <div class="attempt-square" id="attempt1">
+                    <div class="seg edge top"></div>
+                    <div class="seg edge right"></div>
+                    <div class="seg edge bottom"></div>
+                    <div class="seg edge left"></div>
+                    <div class="seg diag diag1"></div>
+                    <div class="seg diag diag2"></div>
+                </div>
+                <div class="attempt-square" id="attempt2">
+                    <div class="seg edge top"></div>
+                    <div class="seg edge right"></div>
+                    <div class="seg edge bottom"></div>
+                    <div class="seg edge left"></div>
+                    <div class="seg diag diag1"></div>
+                    <div class="seg diag diag2"></div>
+                </div>
+                <div class="attempt-square" id="attempt3">
+                    <div class="seg edge top"></div>
+                    <div class="seg edge right"></div>
+                    <div class="seg edge bottom"></div>
+                    <div class="seg edge left"></div>
+                    <div class="seg diag diag1"></div>
+                    <div class="seg diag diag2"></div>
+                </div>
+            </div>
+            <div class="display-container">
+                <div class="segment-display" id="digit1">
+                    <div class="segment horizontal top" id="d1-a"></div>
+                    <div class="segment vertical top-left" id="d1-f"></div>
+                    <div class="segment vertical top-right" id="d1-b"></div>
+                    <div class="segment horizontal middle" id="d1-g"></div>
+                    <div class="segment vertical bottom-left" id="d1-e"></div>
+                    <div class="segment vertical bottom-right" id="d1-c"></div>
+                    <div class="segment horizontal bottom" id="d1-d"></div>
+                </div>
+                <div class="segment-display" id="digit2">
+                    <div class="segment horizontal top" id="d2-a"></div>
+                    <div class="segment vertical top-left" id="d2-f"></div>
+                    <div class="segment vertical top-right" id="d2-b"></div>
+                    <div class="segment horizontal middle" id="d2-g"></div>
+                    <div class="segment vertical bottom-left" id="d2-e"></div>
+                    <div class="segment vertical bottom-right" id="d2-c"></div>
+                    <div class="segment horizontal bottom" id="d2-d"></div>
+                </div>
+                <div class="segment-display" id="digit3">
+                    <div class="segment horizontal top" id="d3-a"></div>
+                    <div class="segment vertical top-left" id="d3-f"></div>
+                    <div class="segment vertical top-right" id="d3-b"></div>
+                    <div class="segment horizontal middle" id="d3-g"></div>
+                    <div class="segment vertical bottom-left" id="d3-e"></div>
+                    <div class="segment vertical bottom-right" id="d3-c"></div>
+                    <div class="segment horizontal bottom" id="d3-d"></div>
+                </div>
+                <div class="segment-display" id="digit4">
+                    <div class="segment horizontal top" id="d4-a"></div>
+                    <div class="segment vertical top-left" id="d4-f"></div>
+                    <div class="segment vertical top-right" id="d4-b"></div>
+                    <div class="segment horizontal middle" id="d4-g"></div>
+                    <div class="segment vertical bottom-left" id="d4-e"></div>
+                    <div class="segment vertical bottom-right" id="d4-c"></div>
+                    <div class="segment horizontal bottom" id="d4-d"></div>
+                </div>
+            </div>
+
+            <!-- Keypad -->
+            <div id="keypadContainer"></div>
+            
+            <div id="minigameResult"></div>
+        </div>
+    </div>
+
+    <div id="colorScreen" class="modal">
+        <div class="modal-content minigame">
+            <p>Doğukan'ın en sevdiği renk ne?</p>
+            <input type="text" id="colorGuess" placeholder="Renk">
+            <button onclick="checkColor()">Tahmin Et</button>
+            <div id="colorResult"></div>
+        </div>
+    </div>
+
+    <div id="countryScreen" class="modal">
+        <div class="modal-content minigame">
+            <p>Bu ülkenin adı ne?</p>
+            <div id="flag" class="flag-container">
+                <img id="flagImage" src="" alt="Bayrak" style="width: 120px; height: 90px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); object-fit: cover;">
+            </div>
+            <input type="text" id="countryGuess" placeholder="Ülke adı">
+            <button onclick="checkCountry()">Tahmin Et</button>
+            <div id="countryResult"></div>
+        </div>
+    </div>
+
+    <div id="memoryScreen" class="modal">
+        <div class="modal-content minigame">
+            <p>Hafıza Oyunu: Tüm çiftleri 30 saniyede bul!</p>
+            <div class="memory-timer-display" id="memoryTimer">
+                <div class="small-7seg" id="mt1">
+                    <div class="seg7 h a"></div><div class="seg7 v f"></div><div class="seg7 v b"></div><div class="seg7 h g"></div><div class="seg7 v e"></div><div class="seg7 v c"></div><div class="seg7 h d"></div>
+                </div>
+                <div class="small-7seg" id="mt2">
+                    <div class="seg7 h a"></div><div class="seg7 v f"></div><div class="seg7 v b"></div><div class="seg7 h g"></div><div class="seg7 v e"></div><div class="seg7 v c"></div><div class="seg7 h d"></div>
+                </div>
+                <div class="small-7seg" id="mt3">
+                    <div class="seg7 h a"></div><div class="seg7 v f"></div><div class="seg7 v b"></div><div class="seg7 h g"></div><div class="seg7 v e"></div><div class="seg7 v c"></div><div class="seg7 h d"></div>
+                </div>
+                <div class="small-7seg" id="mt4">
+                    <div class="seg7 h a"></div><div class="seg7 v f"></div><div class="seg7 v b"></div><div class="seg7 h g"></div><div class="seg7 v e"></div><div class="seg7 v c"></div><div class="seg7 h d"></div>
+                </div>
+            </div>
+            <div class="memory-grid" id="memoryGrid"></div>
+            <div id="memoryResult" class="memory-info"></div>
+        </div>
+    </div>
+
+    <div id="swimGameScreen" class="modal">
+        <div class="modal-content minigame">
+            <p>Yukarı doğru yüz ve düşen engellerdeki boşluktan geç!</p>
+            <div class="swim-area" id="swimArea">
+                <div class="swimmer" id="swimmer">🏊‍♀️</div>
+            </div>
+            <div class="swim-ui">
+                <span class="swim-timer" id="swimTimer">0.00</span> sn
+            </div>
+            <div class="swim-instructions">Basılı tutup yana kaydır: Konumunu değiştir</div>
+            <div id="swimResult"></div>
+        </div>
+    </div>
+
+    <div id="finalScreen" class="modal">
+        <div class="modal-content minigame">
+            <h2>🎉 Tebrikler! 🎉</h2>
+            <p>Tüm testleri başarıyla geçtiniz!</p>
+            <div id="finalResult"></div>
+        </div>
+    </div>
+
+    <div id="friendDialog" class="modal friend-dialog-modal">
+        <div class="modal-content friend-dialog-content">
+            <div class="friend-dialog-box" onclick="closeFriendDialog()">
+                <div class="face"><img src="love.png" class="face-img" alt="Sevgi"></div>
+                <p>Yıa tşk</p>
+                <p class="friend-dialog-subtitle">Tıkla</p>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let correctNumber;
+        let realAge;
+        let randomCountry;
+        let startTime;
+        let dialogParts;
+        let currentPart;
+        let selectedDay = null;
+        let numberInterval;
+
+        const emotions = {
+            happy: '<img src="happy.png" class="face-img" alt="Mutlu">',
+            surprised: '<img src="surprised.png" class="face-img" alt="Şaşkın">',
+            angry: '<img src="angry.png" class="face-img" alt="Kızgın">',
+            normal: '<img src="normal.png" class="face-img" alt="Normal">',
+            love: '<img src="love.png" class="face-img" alt="Sevgi">'
+        };
+
+        const countries = [
+            {name: 'Türkiye', code: 'TR', flag: 'flags/tr.png'},
+            {name: 'Amerika Birleşik Devletleri', code: 'US', flag: 'flags/us.png'},
+            {name: 'Almanya', code: 'DE', flag: 'flags/de.png'},
+            {name: 'Fransa', code: 'FR', flag: 'flags/fr.png'},
+            {name: 'İtalya', code: 'IT', flag: 'flags/it.png'},
+            {name: 'İspanya', code: 'ES', flag: 'flags/es.png'},
+            {name: 'Japonya', code: 'JP', flag: 'flags/jp.png'},
+            {name: 'Çin', code: 'CN', flag: 'flags/cn.png'},
+            {name: 'Hindistan', code: 'IN', flag: 'flags/in.png'},
+            {name: 'Brezilya', code: 'BR', flag: 'flags/br.png'}
+        ];
+
+        // 7-Segment Display Functions
+        let currentInput = '';
+        const digitPatterns = {
+            '0': ['a', 'b', 'c', 'd', 'e', 'f'],
+            '1': ['b', 'c'],
+            '2': ['a', 'b', 'd', 'e', 'g'],
+            '3': ['a', 'b', 'c', 'd', 'g'],
+            '4': ['b', 'c', 'f', 'g'],
+            '5': ['a', 'c', 'd', 'f', 'g'],
+            '6': ['a', 'c', 'd', 'e', 'f', 'g'],
+            '7': ['a', 'b', 'c'],
+            '8': ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            '9': ['a', 'b', 'c', 'd', 'f', 'g']
+        };
+
+        function updateDisplay() {
+            for (let i = 1; i <= 4; i++) {
+                clearDigit(i);
+                if (currentInput.length >= i) {
+                    const digit = currentInput[i - 1];
+                    displayDigit(i, digit);
+                }
+            }
+        }
+
+        function clearDigit(digitNum) {
+            const segments = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+            segments.forEach(seg => {
+                document.getElementById(`d${digitNum}-${seg}`).classList.remove('active');
+            });
+        }
+
+        function displayDigit(digitNum, digit) {
+            const pattern = digitPatterns[digit];
+            if (pattern) {
+                pattern.forEach(seg => {
+                    document.getElementById(`d${digitNum}-${seg}`).classList.add('active');
+                });
+            }
+        }
+
+        function addDigit(digit) {
+            if (currentInput.length < 4) {
+                currentInput += digit;
+                updateDisplay();
+            }
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            updateDisplay();
+        }
+
+        function updateNumber() {
+            const randomNumber = Math.floor(Math.random() * 31) + 1;
+            document.getElementById('numberDisplay').textContent = randomNumber;
+        }
+
+        function startNumberGenerator() {
+            updateNumber();
+            // Her 0.5 saniyede bir sayı değiştir
+            numberInterval = setInterval(updateNumber, 500);
+            
+            // Buton görünürlüğü
+            document.querySelector('.btn-select').style.display = 'inline-block';
+            document.querySelector('.btn-retry').style.display = 'none';
+        }
+
+        function stopNumberGenerator() {
+            if (numberInterval) {
+                clearInterval(numberInterval);
+                numberInterval = null;
+            }
+        }
+
+        function selectDay() {
+            stopNumberGenerator();
+            const displayElement = document.getElementById('numberDisplay');
+            selectedDay = parseInt(displayElement.textContent);
+            document.getElementById('selectedDayDisplay').textContent = selectedDay;
+            
+            // Buton görünürlüğü değiştir
+            document.querySelector('.btn-select').style.display = 'none';
+            document.querySelector('.btn-retry').style.display = 'inline-block';
+        }
+
+        function restartNumberGenerator() {
+            selectedDay = null;
+            document.getElementById('selectedDayDisplay').textContent = '-';
+            startNumberGenerator();
+        }
+
+        function loadDelay() {
+            setTimeout(() => {
+                alert('Uyarı: Bu site yaşınızı yanlış hesaplayabilir ve verilerinizi çalabilir! Devam etmek istiyor musunuz?');
+                document.getElementById('year').focus(); // Yanlış input'a odaklan
+            }, 1000);
+            startNumberGenerator(); // Sayı üreticiyi başlat
+        }
+
+        function prevDay() {
+            selectedDay = (selectedDay - 2 + 31) % 31 + 1;
+            updateCarousel();
+        }
+
+        function nextDay() {
+            selectedDay = (selectedDay % 31) + 1;
+            updateCarousel();
+        }
+
+        window.addEventListener('orientationchange', function() {
+            alert('Ekranı döndürdün! Şimdi her şey karıştı!');
+        });
+
+        document.getElementById('year').addEventListener('input', function() {
+            document.getElementById('yearValue').textContent = this.value;
+        });
+
+        document.getElementById('month').addEventListener('input', function() {
+            // Otomatik kaydetme kaldırıldı
+        });
+
+        document.getElementById('fruit').addEventListener('input', function() {
+            // Otomatik kaydetme kaldırıldı
+        });
+
+        document.getElementById('friend').addEventListener('input', function() {
+            // Otomatik kaydetme kaldırıldı
+        });
+
+        document.getElementById('friend').addEventListener('blur', function() {
+            const friendValue = this.value.trim().toLowerCase();
+
+            function normalizeTurkish(str) {
+                return str
+                    .toLowerCase()
+                    .replace(/ğ/g, 'g')
+                    .replace(/ü/g, 'u')
+                    .replace(/ş/g, 's')
+                    .replace(/ı/g, 'i')
+                    .replace(/ö/g, 'o')
+                    .replace(/ç/g, 'c')
+                    .replace(/â/g, 'a')
+                    .replace(/î/g, 'i')
+                    .replace(/ş/g, 's');
+            }
+            const normalizedFriend = normalizeTurkish(friendValue);
+            if (
+                normalizedFriend === 'sen' ||
+                normalizedFriend === 'dogukan' ||
+                normalizedFriend === 'dogu'
+            ) {
+                showFriendDialog();
+            }
+        });
+
+        document.getElementById('color').addEventListener('input', function() {
+            // Otomatik kaydetme kaldırıldı
+        });
+
+        document.getElementById('captcha').addEventListener('input', function() {
+            const captcha = this.value;
+            if (captcha === 'ben insanım yemin ederim') {
+                document.getElementById('calcBtn').disabled = false;
+            } else {
+                document.getElementById('calcBtn').disabled = true;
+            }
+        });
+
+        function showPopup() {
+            alert('Butona bastın! Şimdi bekle...'); // Dokunma rahatsızlığı
+            document.getElementById('popup').style.display = 'block';
+        }
+
+        function showFriendDialog() {
+            document.getElementById('friendDialog').style.display = 'block';
+        }
+
+        function closeFriendDialog() {
+            document.getElementById('friendDialog').style.display = 'none';
+        }
+
+        function confirmCalculation() {
+            document.getElementById('popup').style.display = 'none';
+            calculateAge();
+        }
+
+
         function calculateAge() {
-            const birthdate = document.getElementById('birthdate').value;
-            if (!birthdate) {
-                document.getElementById('result').innerText = 'Lütfen doğum tarihinizi girin.';
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value) - 1; // JS ay 0-11
+            const day = selectedDay;
+            const fruit = document.getElementById('fruit').value;
+            const friend = document.getElementById('friend').value;
+            const color = document.getElementById('color').value;
+            const captcha = document.getElementById('captcha').value;
+
+            console.log('Debug - year:', year, 'month:', month, 'day:', day, 'selectedDay:', selectedDay);
+
+            if (!year || month === null || selectedDay === null) {
+                document.getElementById('result').innerText = 'Tüm alanları doldurmalısınız! Gün seçmeyi unutmayın!';
                 return;
             }
-            const birth = new Date(birthdate);
+
+            if (!fruit) {
+                document.getElementById('result').innerText = 'En sevdiğin meyve?';
+                return;
+            }
+
+            if (!friend) {
+                document.getElementById('result').innerText = 'En iyi arkadaşın?';
+                return;
+            }
+
+            if (!color) {
+                document.getElementById('result').innerText = 'En sevdiğin renk';
+                return;
+            }
+
+            if (captcha !== 'ben insanım yemin ederim') {
+                document.getElementById('result').innerText = 'Captcha yanlış! Robot musun?';
+                return;
+            }
+
+            const birth = new Date(year, month, day);
             const today = new Date();
-            let age = today.getFullYear() - birth.getFullYear();
+            realAge = today.getFullYear() - birth.getFullYear();
             const monthDiff = today.getMonth() - birth.getMonth();
             if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-                age--;
+                realAge--;
             }
-            document.getElementById('result').innerText = `Yaşınız: ${age}`;
+
+            // Direkt yaş sonucunu göster
+            let resultText = `Yaşınız: ${realAge}`;
+
+            // Mobil kontrol
+            if (window.innerWidth <= 600) {
+                resultText += ' Mobil cihazda mı kullanıyorsun? Bu site mobilde çalışmaz!';
+            }
+
+            document.getElementById('result').innerText = resultText;
+
+            // Her zaman game over'a git (minigame'ler için)
+            gameOver();
+
+            // Sayfa yenileme olasılığı kaldırıldı, artık game over var
+        }
+
+        function gameOver() {
+            document.getElementById('gameover').style.display = 'block';
+        }
+
+        function startMinigame() {
+            document.getElementById('gameover').style.display = 'none';
+            startTime = Date.now();
+            document.getElementById('minigameResult').innerText = '';
+            clearDisplay(); // 7-segment display'i temizle
+            document.getElementById('minigame').style.display = 'block';
+            attemptCount = 0;
+            resetAttemptIndicators();
+        }
+
+        // Rastgele keypad render fonksiyonu
+        let keypadLocked = false;
+        function setKeypadLock(v){
+            keypadLocked = v;
+        }
+        function renderKeypad() {
+    // Tüm tuş etiketleri tek listede (C ve ✓ dahil)
+    const labels = ['1','2','3','4','5','6','7','8','9','0','C','✓'];
+    // Fisher-Yates shuffle (gerçek rastgele)
+    for (let i = labels.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [labels[i], labels[j]] = [labels[j], labels[i]];
+    }
+    const container = document.getElementById('keypadContainer');
+    container.innerHTML = '';
+    for (let r = 0; r < 4; r++) {
+        const row = document.createElement('div');
+        row.className = 'keypad-row';
+        for (let c = 0; c < 3; c++) {
+            const label = labels[r*3 + c];
+            const btn = document.createElement('button');
+            if (label === 'C') {
+                btn.className = 'key clear';
+                btn.textContent = 'C';
+                btn.onclick = () => { clearDisplay(); renderKeypad(); };
+            } else if (label === '✓') {
+                btn.className = 'key enter';
+                btn.textContent = '✓';
+                btn.onclick = () => { checkGuess(); renderKeypad(); };
+            } else {
+                btn.className = 'key';
+                btn.textContent = label;
+                btn.onclick = () => { addDigit(label); renderKeypad(); };
+            }
+            if(keypadLocked){ btn.disabled = true; }
+            row.appendChild(btn);
+        }
+        container.appendChild(row);
+    }
+}
+
+// ...existing code...
+// startMinigame fonksiyonunda keypad'i başlat
+const originalStartMinigame = startMinigame;
+startMinigame = function() {
+    originalStartMinigame();
+    renderKeypad();
+};
+// ...existing code...
+        let attemptCount = 0; // Zorunlu gerilim için deneme sayacı
+
+        function checkGuess() {
+            // Eğer daha önce başarı sağlandıysa tekrar işleme alma
+            if (attemptCount >= 3) return;
+
+            const guess = currentInput;
+
+            // 4 haneli sayı kontrolü (eksikse attempt sayılmaz)
+            if (!/\d{4}$/.test(guess)) {
+                dialogParts = [
+                    {text: "Hayır hayır hayır!", emotion: "angry"},
+                    {text: "4 haneli bir sayı girmelisin!", emotion: "angry"},
+                    {text: "Tekrar dene...", emotion: "normal"}
+                ];
+                currentPart = 0;
+                document.getElementById('minigameResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialogError()">
+                        <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                        <p>${dialogParts[0].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+                setKeypadLock(true); renderKeypad();
+                return;
+            }
+
+            attemptCount++;
+
+            // İlk iki doğru formatlı giriş ZORLA yanlış gösterilir
+            if (attemptCount === 1 || attemptCount === 2) {
+                markAttemptFail(attemptCount);
+                if (attemptCount === 1) {
+                    dialogParts = [
+                        {text: "Erişim reddedildi!", emotion: "angry"},
+                        {text: "Şifre hatalı. Güvenlik seviyesi artıyor...", emotion: "angry"},
+                        {text: "Tekrar dene.", emotion: "normal"}
+                    ];
+                } else { // 2. deneme
+                    dialogParts = [
+                        {text: "YİNE yanlış!", emotion: "angry"},
+                        {text: "Sistem kilitlenmek üzere...", emotion: "surprised"},
+                        {text: "SON bir şans...", emotion: "angry"}
+                    ];
+                }
+                currentPart = 0;
+                document.getElementById('minigameResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialogError()">
+                        <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                        <p>${dialogParts[0].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+                clearDisplay();
+                setKeypadLock(true); renderKeypad();
+                return;
+            }
+
+            // 3. deneme her zaman BAŞARILI
+            markAttemptSuccess(3);
+            const timeTaken = (Date.now() - startTime) / 1000;
+            let averageTime = timeTaken * 1000000; // Rastgele büyük çarpan
+            const units = ['saniye', 'dakika', 'saat', 'gün', 'ay', 'yıl'];
+            const multipliers = [1, 60, 3600, 86400, 2592000, 31536000];
+            let unitIndex = 0;
+            while (averageTime >= multipliers[unitIndex + 1] && unitIndex < units.length - 1) {
+                averageTime /= multipliers[unitIndex + 1];
+                unitIndex++;
+            }
+            dialogParts = [
+                {text: "Mükemmel!", emotion: "happy"},
+                {text: `Şifreyi "${timeTaken.toFixed(2)}" saniyede ve "3" denemede çözdün.`, emotion: "surprised"},
+                {text: `Bunu ortalama bir insanın yapması ${averageTime.toFixed(2)} ${units[unitIndex]} sürerdi.`, emotion: "angry"},
+                {text: "Sistemde oturum açıldı! Sonraki aşamaya geç!", emotion: "normal"}
+            ];
+            currentPart = 0;
+            document.getElementById('minigameResult').innerHTML = `
+                <div class="dialog-box" onclick="nextDialog()">
+                    <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                    <p>${dialogParts[0].text}</p>
+                </div>
+                <p class="click-text">tıkla</p>
+            `;
+        }
+
+        function resetAttemptIndicators() {
+            for (let i = 1; i <= 3; i++) {
+                const el = document.getElementById(`attempt${i}`);
+                el.querySelectorAll('.seg').forEach(seg => {
+                    seg.classList.remove('active-fail', 'active-success');
+                });
+            }
+        }
+
+        function markAttemptFail(n) {
+            const el = document.getElementById(`attempt${n}`);
+            if (!el) return;
+            // Çaprazları yak
+            el.querySelectorAll('.diag').forEach(seg => seg.classList.add('active-fail'));
+        }
+
+        function markAttemptSuccess(n) {
+            const el = document.getElementById(`attempt${n}`);
+            if (!el) return;
+            // Kenarları yak
+            el.querySelectorAll('.edge').forEach(seg => seg.classList.add('active-success'));
+        }
+
+        function checkColor() {
+            const colorGuess = document.getElementById('colorGuess').value.toLowerCase();
+            if (colorGuess === 'mavi') {
+                randomCountry = countries[Math.floor(Math.random() * countries.length)];
+                dialogParts = [
+                    {text: "Harika!", emotion: "happy"},
+                    {text: "Doğru cevap maviydi.", emotion: "surprised"},
+                    {text: "Şimdi bir sonraki aşamaya geçelim.", emotion: "normal"}
+                ];
+                currentPart = 0;
+                document.getElementById('colorResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialogColor()">
+                        <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                        <p>${dialogParts[0].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            } else {
+                // Hata mesajını dialog ile göster
+                dialogParts = [
+                    {text: "Yanlış cevap! Tekrar dene..", emotion: "angry"},
+                    
+                ];
+                currentPart = 0;
+                document.getElementById('colorResult').innerHTML = `
+                    <div class="dialog-box" onclick="retryColor()">
+                        <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                        <p>${dialogParts[0].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            }
+        }
+
+        function checkCountry() {
+            const countryGuess = document.getElementById('countryGuess').value.toLowerCase();
+            const countryName = randomCountry.name.toLowerCase();
+            
+            // Türkçe karakter normalleştirmesi
+            const normalizeText = (text) => {
+                return text.replace(/ı/g, 'i')
+                          .replace(/ğ/g, 'g')
+                          .replace(/ü/g, 'u')
+                          .replace(/ş/g, 's')
+                          .replace(/ö/g, 'o')
+                          .replace(/ç/g, 'c')
+                          .replace(/İ/g, 'i');
+            };
+            
+            const normalizedGuess = normalizeText(countryGuess);
+            const normalizedCountry = normalizeText(countryName);
+            
+            if (normalizedGuess === normalizedCountry) {
+                dialogParts = [
+                    {text: "Tebrikler!", emotion: "happy"},
+                    {text: "Doğru bildiniz.", emotion: "surprised"},
+                ];
+                currentPart = 0;
+                document.getElementById('countryResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialogCountry()">
+                        <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                        <p>${dialogParts[0].text}</p>
+                    </div>
+                    <p class="click-text">Tıkla</p>
+                `;
+            } else {
+                // Hata mesajını dialog ile göster
+                dialogParts = [
+                    {text: "Yanlış cevap! Tekrar dene..", emotion: "angry"},
+                ];
+                currentPart = 0;
+                document.getElementById('countryResult').innerHTML = `
+                    <div class="dialog-box" onclick="retryCountry()">
+                        <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                        <p>${dialogParts[0].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            }
+        }
+
+        function nextStep() {
+            // Minigame ekranını kapat ve renk ekranını aç
+            document.getElementById('minigame').style.display = 'none';
+            document.getElementById('colorScreen').style.display = 'block';
+        }
+
+        function nextDialogColor() {
+            currentPart++;
+            if (currentPart < dialogParts.length) {
+                document.getElementById('colorResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialogColor()">
+                        <div class="face">${emotions[dialogParts[currentPart].emotion]}</div>
+                        <p>${dialogParts[currentPart].text}</p>
+                    </div>
+                    <p class="click-text">Tıkla</p>
+                `;
+            } else {
+                // Renk ekranını kapat ve ülke ekranını aç
+                document.getElementById('colorScreen').style.display = 'none';
+                document.getElementById('countryScreen').style.display = 'block';
+                // Bayrağı göster
+                document.getElementById('flagImage').src = randomCountry.flag;
+                document.getElementById('flagImage').alt = randomCountry.name + ' bayrağı';
+            }
+        }
+
+        function nextDialogCountry() {
+            currentPart++;
+            console.log('nextDialogCountry called, currentPart:', currentPart, 'dialogParts.length:', dialogParts.length);
+            
+            if (currentPart < dialogParts.length) {
+                document.getElementById('countryResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialogCountry()">
+                        <div class="face">${emotions[dialogParts[currentPart].emotion]}</div>
+                        <p>${dialogParts[currentPart].text}</p>
+                    </div>
+                    <p class="click-text">Tıkla</p>
+                `;
+            } else {
+                // Ülke oyunu bitti -> Hafıza oyunu başlat
+                document.getElementById('countryScreen').style.display = 'none';
+                startMemoryGame();
+            }
+        }
+
+        function retryColor() {
+            currentPart++;
+            if (currentPart < dialogParts.length) {
+                document.getElementById('colorResult').innerHTML = `
+                    <div class="dialog-box" onclick="retryColor()">
+                        <div class="face">${emotions[dialogParts[currentPart].emotion]}</div>
+                        <p>${dialogParts[currentPart].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            } else {
+                // Input'u temizle ve tekrar deneme fırsatı ver
+                document.getElementById('colorGuess').value = '';
+                document.getElementById('colorResult').innerHTML = '';
+            }
+        }
+
+        function retryCountry() {
+            currentPart++;
+            if (currentPart < dialogParts.length) {
+                document.getElementById('countryResult').innerHTML = `
+                    <div class="dialog-box" onclick="retryCountry()">
+                        <div class="face">${emotions[dialogParts[currentPart].emotion]}</div>
+                        <p>${dialogParts[currentPart].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            } else {
+                // Input'u temizle ve tekrar deneme fırsatı ver
+                document.getElementById('countryGuess').value = '';
+                document.getElementById('countryResult').innerHTML = '';
+            }
+        }
+
+        function startFinalDialog() {
+            let ageDialogs = [];
+            
+            // Kullanıcının doğum tarihini al
+            const userYear = parseInt(document.getElementById('year').value);
+            const userMonth = parseInt(document.getElementById('month').value) - 1; // JS için 0-11 arası
+            const userDay = selectedDay;
+            
+            // Doğum günü kontrolü: 21 Eylül 2002
+            const isBirthday = (userYear === 2002 && userMonth === 8 && userDay === 21);
+
+            if (!isBirthday) {
+                ageDialogs = [
+                    {text: `Problem çözüldü ve yaşınız hesaplandı.`, emotion: "happy"},
+                    {text: `Teşekkür ederiz!`, emotion: "happy"},
+                    {text: `Yaşınız: ${realAge}`, emotion: "normal"},
+                    {text: "Kendini genç görmene sevindim", emotion: "happy"},
+                    {text: "Hep de öyle kal", emotion: "happy"},
+                    {text: "Ama gerçek yaşının bu olmadığını biliyoruz...", emotion: "angry"},
+                ];
+            } else if (isBirthday) {
+                ageDialogs = [
+                    {text: `Problem çözüldü ve yaşınız hesaplandı.`, emotion: "happy"},
+                    {text: `Teşekkür ederiz!`, emotion: "happy"},
+                    {text: `Yaşınız: ${realAge}`, emotion: "normal"},
+                    {text: "Buraya kadar geldiğiniz için tebrik ederim.", emotion: "happy"},
+                    {text: "Her zamanki gibi zeka, çeviklik ve yaratıcılığınızı konuşturdunuz!", emotion: "happy"},
+                    {text: "Bu mesajı görüyorsanız yaratıcım olan Doğukan Erkan'a ulaşınız.", emotion: "surprised"},
+                    {text: "Doğum gününüz kutlu olsun 🎉", emotion: "love"},
+                ];
+            }
+
+            dialogParts = ageDialogs;
+            currentPart = 0;
+            document.getElementById('finalResult').innerHTML = `
+                <div class="dialog-box" onclick="nextDialogFinal()">
+                    <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                    <p>${dialogParts[0].text}</p>
+                </div>
+                <p class="click-text">tıkla</p>
+            `;
+        }
+
+        function nextDialogFinal() {
+            currentPart++;
+            if (currentPart < dialogParts.length) {
+                document.getElementById('finalResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialogFinal()">
+                        <div class="face">${emotions[dialogParts[currentPart].emotion]}</div>
+                        <p>${dialogParts[currentPart].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            } else {
+                // Son dialog bittiğinde final ekranını kapat
+                document.getElementById('finalScreen').style.display = 'none';
+                
+                // Otomatik olarak veritabanına kaydet (sessizce)
+                saveDataToDatabase();
+                
+                // Kısa bir mesaj göster
+                console.log('Program tamamlandı! Veriler otomatik olarak kaydedildi.');
+                
+                // Tüm input alanlarını ve sonuçları temizle
+                resetAllInputs();
+            }
+        }
+
+        function nextDialog() {
+            currentPart++;
+            if (currentPart < dialogParts.length) {
+                document.getElementById('minigameResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialog()">
+                        <div class="face">${emotions[dialogParts[currentPart].emotion]}</div>
+                        <p>${dialogParts[currentPart].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            } else {
+                if (dialogParts.some(p => p.text.includes('sonraki adıma') || p.text.includes('Sonraki aşamaya'))) {
+                    document.getElementById('minigameResult').innerHTML = `<button onclick="nextStep()">Sonraki Adıma Geç</button>`;
+                }
+            }
+        }
+
+    function nextDialogError() {
+            currentPart++;
+            if (currentPart < dialogParts.length) {
+                document.getElementById('minigameResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextDialogError()">
+                        <div class="face">${emotions[dialogParts[currentPart].emotion]}</div>
+                        <p>${dialogParts[currentPart].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            } else {
+                // Hata durumunda display'i temizle ve yeniden denemeye izin ver
+                clearDisplay();
+                document.getElementById('minigameResult').innerHTML = '';
+        setKeypadLock(false); renderKeypad();
+            }
+        }
+
+        function resetAllInputs() {
+            // Ana form input'larını temizle
+            document.getElementById('year').value = '1939';
+            document.getElementById('yearValue').textContent = '1939';
+            document.getElementById('month').value = '';
+            document.getElementById('fruit').value = '';
+            document.getElementById('friend').value = '';
+            document.getElementById('color').value = '';
+            document.getElementById('captcha').value = '';
+            
+            // 7-segment display'i temizle
+            clearDisplay();
+            
+            // Gün seçimini sıfırla
+            selectedDay = null;
+            document.getElementById('selectedDayDisplay').textContent = '-';
+            document.getElementById('numberDisplay').textContent = '15';
+            document.querySelector('.btn-select').style.display = 'inline-block';
+            document.querySelector('.btn-retry').style.display = 'none';
+            
+            // Sonuç alanını temizle
+            document.getElementById('result').innerText = '';
+            
+            // Minigame input'larını temizle (artık keypad kullanıyor)
+            // document.getElementById('guess').value = '';  // Bu satır artık gerekli değil
+            document.getElementById('colorGuess').value = '';
+            document.getElementById('countryGuess').value = '';
+            
+            // Tüm sonuç div'lerini temizle
+            document.getElementById('minigameResult').innerHTML = '';
+            document.getElementById('colorResult').innerHTML = '';
+            document.getElementById('countryResult').innerHTML = '';
+            document.getElementById('finalResult').innerHTML = '';
+            
+            // Hesapla butonunu devre dışı bırak
+            document.getElementById('calcBtn').disabled = true;
+            
+            // Global değişkenleri sıfırla
+            correctNumber = null;
+            realAge = null;
+            randomCountry = null;
+            startTime = null;
+            dialogParts = null;
+            currentPart = null;
+            
+            console.log('Tüm input alanları ve değerler sıfırlandı!');
+        }
+
+        function saveData() {
+            const data = {
+                year: document.getElementById('year').value,
+                month: document.getElementById('month').value,
+                selectedDay: selectedDay,
+                fruit: document.getElementById('fruit').value,
+                friend: document.getElementById('friend').value,
+                color: document.getElementById('color').value,
+                captcha: document.getElementById('captcha').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('yasHesaplamaData', JSON.stringify(data));
+            console.log('Veriler kaydedildi:', data);
+        }
+
+        function loadSavedData() {
+            const savedData = localStorage.getItem('yasHesaplamaData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    
+                    // Kaydedilmiş değerleri yükle
+                    if (data.year) {
+                        document.getElementById('year').value = data.year;
+                        document.getElementById('yearValue').textContent = data.year;
+                    }
+                    if (data.month) {
+                        document.getElementById('month').value = data.month;
+                    }
+                    if (data.selectedDay) {
+                        selectedDay = data.selectedDay;
+                        document.getElementById('selectedDayDisplay').textContent = selectedDay;
+                        document.querySelector('.btn-select').style.display = 'none';
+                        document.querySelector('.btn-retry').style.display = 'inline-block';
+                    }
+                    if (data.fruit) {
+                        document.getElementById('fruit').value = data.fruit;
+                    }
+                    if (data.friend) {
+                        document.getElementById('friend').value = data.friend;
+                    }
+                    if (data.color) {
+                        document.getElementById('color').value = data.color;
+                    }
+                    if (data.captcha) {
+                        document.getElementById('captcha').value = data.captcha;
+                        // Captcha kontrolü
+                        if (data.captcha === 'ben insanım yemin ederim') {
+                            document.getElementById('calcBtn').disabled = false;
+                        }
+                    }
+                    
+                    console.log('Kaydedilmiş veriler yüklendi:', data);
+                    alert('Önceki oturumunuzdan kaydedilmiş verileriniz yüklendi! ✅');
+                    
+                } catch (error) {
+                    console.error('Veri yükleme hatası:', error);
+                }
+            }
+        }
+
+        function saveDataToJSON() {
+            const data = {
+                userData: {
+                    year: document.getElementById('year').value,
+                    month: document.getElementById('month').value,
+                    selectedDay: selectedDay,
+                    fruit: document.getElementById('fruit').value,
+                    friend: document.getElementById('friend').value,
+                    color: document.getElementById('color').value,
+                    captcha: document.getElementById('captcha').value,
+                    realAge: realAge,
+                    timestamp: new Date().toISOString(),
+                    sessionId: Date.now()
+                },
+                gameData: {
+                    correctNumber: correctNumber,
+                    randomCountry: randomCountry ? randomCountry.name : null,
+                    startTime: startTime,
+                    completionTime: Date.now()
+                }
+            };
+            
+            // JSON verisini oluştur
+            const jsonData = JSON.stringify(data, null, 2);
+            
+            // Blob oluştur ve indirme linki oluştur
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // Geçici link oluştur ve tıkla
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `yas-verisi-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // URL'i temizle
+            URL.revokeObjectURL(url);
+            
+            console.log('Veriler JSON dosyası olarak kaydedildi:', data);
+            alert('Verileriniz JSON dosyası olarak indirildi! 📁');
+        }
+
+        function saveDataToDatabase() {
+            const data = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                userInfo: {
+                    year: document.getElementById('year').value,
+                    month: document.getElementById('month').value,
+                    day: selectedDay,
+                    fruit: document.getElementById('fruit').value,
+                    friend: document.getElementById('friend').value,
+                    color: document.getElementById('color').value,
+                    captcha: document.getElementById('captcha').value,
+                    calculatedAge: realAge
+                },
+                gameResults: {
+                    passwordGame: correctNumber,
+                    colorGame: 'mavi',
+                    countryGame: randomCountry ? randomCountry.name : null,
+                    completionTime: Date.now() - (startTime || Date.now())
+                }
+            };
+
+            // IndexedDB ile kaydet (sessizce)
+            saveToIndexedDB(data);
+            
+            console.log('Veriler otomatik olarak veritabanına kaydedildi:', data);
+        }
+
+        function saveToIndexedDB(data) {
+            // IndexedDB aç/kullan
+            const request = indexedDB.open('YasHesaplamaDB', 1);
+            
+            request.onerror = function(event) {
+                console.error('IndexedDB hatası:', event.target.error);
+                alert('Veritabanı hatası! Lütfen tarayıcı ayarlarınızı kontrol edin.');
+            };
+            
+            request.onupgradeneeded = function(event) {
+                const db = event.target.result;
+                
+                // Kullanıcı verileri için object store oluştur
+                if (!db.objectStoreNames.contains('userData')) {
+                    const store = db.createObjectStore('userData', { keyPath: 'id' });
+                    store.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+                
+                // Oyun sonuçları için object store oluştur
+                if (!db.objectStoreNames.contains('gameResults')) {
+                    const gameStore = db.createObjectStore('gameResults', { keyPath: 'id' });
+                    gameStore.createIndex('completionTime', 'gameResults.completionTime', { unique: false });
+                }
+            };
+            
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                
+                // Transaction başlat
+                const transaction = db.transaction(['userData', 'gameResults'], 'readwrite');
+                
+                // Kullanıcı verilerini kaydet
+                const userStore = transaction.objectStore('userData');
+                userStore.add(data);
+                
+                // Oyun sonuçlarını kaydet
+                const gameStore = transaction.objectStore('gameResults');
+                gameStore.add({
+                    id: data.id,
+                    completionTime: data.gameResults.completionTime,
+                    score: calculateScore(data),
+                    timestamp: data.timestamp
+                });
+                
+                transaction.oncomplete = function() {
+                    console.log('Veriler IndexedDB\'ye başarıyla kaydedildi!');
+                    alert('Verileriniz veritabanına kaydedildi! �');
+                    db.close();
+                };
+                
+                transaction.onerror = function(event) {
+                    console.error('Transaction hatası:', event.target.error);
+                    alert('Veri kaydetme hatası!');
+                };
+            };
+        }
+
+        function calculateScore(data) {
+            let score = 0;
+            if (data.userInfo.calculatedAge) score += 10;
+            if (data.userInfo.fruit) score += 5;
+            if (data.userInfo.friend) score += 5;
+            if (data.userInfo.color) score += 5;
+            if (data.gameResults.countryGame) score += 20;
+            return score;
+        }
+
+        function viewDatabase() {
+            const request = indexedDB.open('YasHesaplamaDB', 1);
+            
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                const transaction = db.transaction(['userData'], 'readonly');
+                const store = transaction.objectStore('userData');
+                
+                const records = [];
+                store.openCursor().onsuccess = function(event) {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        records.push(cursor.value);
+                        cursor.continue();
+                    } else {
+                        // Tüm kayıtları göster
+                        showDatabaseRecords(records);
+                        db.close();
+                    }
+                };
+            };
+        }
+
+        function showDatabaseRecords(records) {
+            if (records.length === 0) {
+                alert('Veritabanında kayıt bulunamadı!');
+                return;
+            }
+            
+            let message = `📊 Veritabanı Kayıtları (${records.length} adet):\n\n`;
+            
+            records.forEach((record, index) => {
+                message += `${index + 1}. Kayıt:\n`;
+                message += `   Tarih: ${new Date(record.timestamp).toLocaleString()}\n`;
+                message += `   Yaş: ${record.userInfo.calculatedAge || 'Hesaplanmadı'}\n`;
+                message += `   Meyve: ${record.userInfo.fruit || 'Belirtilmedi'}\n`;
+                message += `   Renk: ${record.userInfo.color || 'Belirtilmedi'}\n`;
+                message += `   Ülke: ${record.gameResults.countryGame || 'Oynanmadı'}\n\n`;
+            });
+            
+            alert(message);
+        }
+
+        function clearDatabase() {
+            const request = indexedDB.deleteDatabase('YasHesaplamaDB');
+            
+            request.onsuccess = function() {
+                console.log('Veritabanı silindi');
+                alert('Tüm veritabanı kayıtları silindi! 🗑️');
+            };
+            
+            request.onerror = function(event) {
+                console.error('Veritabanı silme hatası:', event.target.error);
+                alert('Veritabanı silme hatası!');
+            };
+        }
+
+        /* ================= Memory Game ================= */
+        const memoryEmojis = [
+            '🐱','🐶','🐸','🦊','🐼','🐧','🐙','🐝','🦁','🐵','🐢','🦄'
+        ];
+        let memoryPairs = [];
+        let memoryFirst = null;
+        let memoryLock = false;
+        let memoryFound = 0;
+        let memoryTimerInterval = null;
+    const MEMORY_LIMIT_MS = 60000; // 40 saniye
+        let memoryStartTime = null;
+
+        const smallDigitPatterns = {
+            '0': ['a','b','c','d','e','f'],
+            '1': ['b','c'],
+            '2': ['a','b','d','e','g'],
+            '3': ['a','b','c','d','g'],
+            '4': ['b','c','f','g'],
+            '5': ['a','c','d','f','g'],
+            '6': ['a','c','d','e','f','g'],
+            '7': ['a','b','c'],
+            '8': ['a','b','c','d','e','f','g'],
+            '9': ['a','b','c','d','f','g']
+        };
+
+        function updateMemoryTimerDisplay(ms) {
+            const centi = Math.floor(ms / 10); // centisecond
+            let display = centi.toString().padStart(4,'0');
+            for (let i=0;i<4;i++) {
+                setSmall7SegDigit(i+1, display[i]);
+            }
+        }
+
+        function clearSmallDigit(n){
+            document.querySelectorAll(`#mt${n} .seg7`).forEach(s=>s.classList.remove('on'));
+        }
+        function setSmall7SegDigit(n, digit){
+            clearSmallDigit(n);
+            const pattern = smallDigitPatterns[digit];
+            if(!pattern) return;
+            pattern.forEach(code=>{
+                document.querySelector(`#mt${n} .${code}`).classList.add('on');
+            });
+        }
+
+        function shuffle(array){
+            for(let i=array.length-1;i>0;i--){
+                const j=Math.floor(Math.random()*(i+1));
+                [array[i],array[j]]=[array[j],array[i]];
+            }
+            return array;
+        }
+
+        function buildMemoryGrid(){
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            memoryPairs.forEach((emoji, idx)=>{
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.index = idx;
+                card.innerHTML = `<span>${emoji}</span>`;
+                card.onclick = ()=> memoryCardClick(card);
+                grid.appendChild(card);
+            });
+        }
+
+        function memoryCardClick(card){
+            if(memoryLock) return;
+            if(card.classList.contains('revealed') || card.classList.contains('matched')) return;
+            card.classList.add('revealed');
+            if(!memoryFirst){
+                memoryFirst = card;
+                return;
+            }
+            // second
+            const firstEmoji = memoryPairs[ memoryFirst.dataset.index ];
+            const secondEmoji = memoryPairs[ card.dataset.index ];
+            if(firstEmoji === secondEmoji){
+                memoryFirst.classList.add('matched');
+                card.classList.add('matched');
+                memoryFound++;
+                memoryFirst = null;
+                if(memoryFound === memoryEmojis.length){
+                    memoryGameSuccess();
+                }
+            } else {
+                memoryLock = true;
+                setTimeout(()=>{
+                    card.classList.remove('revealed');
+                    memoryFirst.classList.remove('revealed');
+                    memoryFirst = null;
+                    memoryLock = false;
+                },600);
+            }
+        }
+
+        function startMemoryGame(){
+            document.getElementById('memoryScreen').style.display = 'block';
+            document.getElementById('memoryResult').textContent='';
+            // create pairs
+            memoryPairs = shuffle([...memoryEmojis, ...memoryEmojis]);
+            memoryFirst = null;
+            memoryLock = false;
+            memoryFound = 0;
+            buildMemoryGrid();
+            memoryStartTime = performance.now();
+            updateMemoryTimerDisplay(0);
+            if(memoryTimerInterval) clearInterval(memoryTimerInterval);
+            memoryTimerInterval = setInterval(()=>{
+                const elapsed = performance.now() - memoryStartTime;
+                updateMemoryTimerDisplay(elapsed);
+                if(elapsed >= MEMORY_LIMIT_MS){
+                    memoryTimeFail();
+                }
+            }, 30); // ~33 fps
+        }
+
+        function memoryTimeFail(){
+            clearInterval(memoryTimerInterval);
+            document.getElementById('memoryResult').textContent = 'Süre doldu! Karıştırılıyor...';
+            setTimeout(()=>{
+                startMemoryGame(); // tamamen yeniden dağıt
+            }, 1200);
+        }
+
+        function memoryGameSuccess(){
+            clearInterval(memoryTimerInterval);
+            const total = performance.now() - memoryStartTime;
+            document.getElementById('memoryResult').textContent = `Başardın! Süre: ${(total/1000).toFixed(2)} sn`; 
+            setTimeout(()=>{
+                document.getElementById('memoryScreen').style.display='none';
+                startSwimGame();
+            }, 1500);
+        }
+
+        /* ================= Swim Game (Flappy Style Falling Rows) ================= */
+    const SWIM_TARGET_TIME = 20000; // 20s
+    const FALL_SPEED_BASE = 60; // DÜŞÜRÜLDÜ eski 90
+    const FALL_SPEED_GROWTH = 0.4; // DÜŞÜRÜLDÜ eski 0.8
+    const ROW_INTERVAL_MIN = 900; // biraz seyrek
+    const ROW_INTERVAL_MAX = 1500; // biraz daha geniş aralık
+        const GAP_MIN = 55; // px
+        const GAP_MAX = 75; // px
+        let swimStart = null;
+        let swimAnim = null;
+        let swimRows = []; // {el, y, gapStart, gapWidth}
+        let swimAlive = false;
+        let lastRowTime = 0;
+        let nextRowIn = 0;
+        let dragging = false;
+        let areaRectCache = null;
+    // Otomatik yükselme kaldırıldı
+
+        function startSwimGame(){
+            const screen = document.getElementById('swimGameScreen');
+            screen.style.display='block';
+            const area = document.getElementById('swimArea');
+            // cleanup eski satırlar
+            swimRows.forEach(r=>r.el.remove());
+            swimRows = [];
+            swimStart = performance.now();
+            lastRowTime = swimStart;
+            nextRowIn = randRange(ROW_INTERVAL_MIN, ROW_INTERVAL_MAX);
+            swimAlive = true;
+            dragging = false;
+            // riseOffset kaldırıldı
+            document.getElementById('swimResult').textContent='';
+            document.getElementById('swimTimer').textContent='0.00';
+            const swimmer = document.getElementById('swimmer');
+            swimmer.style.left = '115px';
+            swimmer.style.top = '300px';
+            areaRectCache = area.getBoundingClientRect();
+            initSwimControls();
+            swimLoop();
+        }
+
+        function initSwimControls(){
+            const area = document.getElementById('swimArea');
+            area.onpointerdown = (e)=>{ 
+                dragging = true; 
+                area.setPointerCapture(e.pointerId);
+                moveSwimmer(e);
+                e.preventDefault();
+            };
+            area.onpointermove = (e)=>{ if(dragging){ moveSwimmer(e); e.preventDefault(); } };
+            area.onpointerup = (e)=>{ dragging = false; area.releasePointerCapture(e.pointerId); };
+            area.onpointerleave = ()=>{ dragging = false; };
+            // dokunma (iOS uyumu için)
+            area.ontouchstart = (e)=>{ dragging = true; moveSwimmer(e.touches[0]); e.preventDefault(); };
+            area.ontouchmove = (e)=>{ if(dragging){ moveSwimmer(e.touches[0]); e.preventDefault(); } };
+            area.ontouchend = ()=>{ dragging = false; };
+        }
+
+        function cleanupSwimControls(){
+            const area = document.getElementById('swimArea');
+            area.onpointerdown = area.onpointermove = area.onpointerup = area.onpointerleave = null;
+            area.ontouchstart = area.ontouchmove = area.ontouchend = null;
+        }
+
+        function moveSwimmer(e){
+            if(!swimAlive) return;
+            const swimmer = document.getElementById('swimmer');
+            const area = document.getElementById('swimArea');
+            const rect = areaRectCache || area.getBoundingClientRect();
+            const clientX = e.clientX !== undefined ? e.clientX : (e.pageX || 0);
+            const x = clientX - rect.left; // alan içi x
+            const clamped = Math.max(0, Math.min(rect.width - swimmer.offsetWidth, x - swimmer.offsetWidth/2));
+            swimmer.style.left = clamped + 'px';
+            // Y sabit (otomatik tırmanma yok)
+        }
+
+        function randRange(a,b){ return Math.random()*(b-a)+a; }
+
+        function spawnRow(){
+            const area = document.getElementById('swimArea');
+            const gapWidth = randRange(GAP_MIN, GAP_MAX);
+            const maxStart = area.clientWidth - gapWidth;
+            const gapStart = randRange(0, maxStart);
+            const rowEl = document.createElement('div');
+            rowEl.className = 'fall-row';
+            // left block
+            if(gapStart > 2){
+                const left = document.createElement('div');
+                left.className = 'fall-block'+(Math.random()>0.6?' alt':'');
+                left.style.left = '0px';
+                left.style.width = gapStart + 'px';
+                rowEl.appendChild(left);
+            }
+            // right block
+            const rightWidth = area.clientWidth - (gapStart + gapWidth);
+            if(rightWidth > 2){
+                const right = document.createElement('div');
+                right.className = 'fall-block'+(Math.random()>0.6?' alt':'');
+                right.style.left = (gapStart + gapWidth) + 'px';
+                right.style.width = rightWidth + 'px';
+                rowEl.appendChild(right);
+            }
+            area.appendChild(rowEl);
+            swimRows.push({el: rowEl, y: 0, gapStart, gapWidth});
+        }
+
+        function swimLoop(now){
+            if(!swimAlive) return;
+            now = now || performance.now();
+            const elapsed = now - swimStart;
+            document.getElementById('swimTimer').textContent = (elapsed/1000).toFixed(2);
+            if(elapsed >= SWIM_TARGET_TIME){
+                swimSuccess();
+                return;
+            }
+            // Hız hesapla
+            const fallSpeed = FALL_SPEED_BASE + (elapsed/1000)*FALL_SPEED_GROWTH; // çok yavaş artış
+            // satır yaratma
+            if(now - lastRowTime >= nextRowIn){
+                spawnRow();
+                lastRowTime = now;
+                nextRowIn = randRange(ROW_INTERVAL_MIN, ROW_INTERVAL_MAX);
+            }
+            const dt = 16; // ms approx
+            const dy = (fallSpeed/1000)*dt;
+            // rows move
+            swimRows.forEach(r=>{
+                r.y += dy;
+                r.el.style.top = r.y + 'px';
+            });
+            // Y konumu sabit bırakılıyor (tırmanma kaldırıldı)
+            const swimmer = document.getElementById('swimmer');
+            // çarpışma kontrolü
+            const swimmerRect = swimmer.getBoundingClientRect();
+            const areaRect = document.getElementById('swimArea').getBoundingClientRect();
+            for(const r of swimRows){
+                const rowTop = areaRect.top + r.y;
+                const rowBottom = rowTop + 30;
+                if(rowBottom < swimmerRect.top || rowTop > swimmerRect.bottom) continue; // henüz kesişmiyor
+                // swimmer X merkezi boşlukta mı?
+                const swimmerXCenter = swimmerRect.left + swimmerRect.width/2;
+                const gapLeft = areaRect.left + r.gapStart;
+                const gapRight = gapLeft + r.gapWidth;
+                if(swimmerXCenter < gapLeft || swimmerXCenter > gapRight){
+                    swimFail();
+                    return;
+                }
+            }
+            // ekrandan çıkan satırları sil
+            swimRows = swimRows.filter(r=>{
+                if(r.y > areaRect.height){ r.el.remove(); return false; }
+                return true;
+            });
+            swimAnim = requestAnimationFrame(swimLoop);
+        }
+
+        function swimFail(){
+            swimAlive = false;
+            cancelAnimationFrame(swimAnim);
+            cleanupSwimControls();
+            document.getElementById('swimResult').textContent = 'Çarptın! Tekrar...';
+            setTimeout(startSwimGame, 1200);
+        }
+
+        function swimSuccess(){
+            swimAlive = false;
+            cancelAnimationFrame(swimAnim);
+            cleanupSwimControls();
+            document.getElementById('swimResult').innerHTML='';
+            dialogParts = [
+                {text:'Yukarı yüzüş ustalaştın.', emotion:'surprised'},
+                {text:'20 saniyeyi geçtiğini fark etmedin değil mi?', emotion:'angry'},
+                {text:'Tamam... son aşamaya geç bakalım.', emotion:'normal'}
+            ];
+            currentPart = 0;
+            document.getElementById('swimResult').innerHTML = `
+                <div class="dialog-box" onclick="nextDialogSwim()">
+                    <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                    <p>${dialogParts[0].text}</p>
+                </div>
+                <p class="click-text">tıkla</p>
+            `;
+        }
+
+        function nextDialogSwim(){
+            currentPart++;
+            if(currentPart < dialogParts.length){
+                document.getElementById('swimResult').innerHTML = `
+                    <div class=\"dialog-box\" onclick=\"nextDialogSwim()\">\n                        <div class=\"face\">${emotions[dialogParts[currentPart].emotion]}</div>\n                        <p>${dialogParts[currentPart].text}</p>\n                    </div>\n                    <p class=\"click-text\">tıkla</p>
+                `;
+            } else {
+                document.getElementById('swimGameScreen').style.display='none';
+                document.getElementById('finalScreen').style.display='block';
+                startFinalDialog();
+            }
         }
     </script>
 </body>
