@@ -1643,7 +1643,6 @@ startMinigame = function() {
                     }
                     
                     console.log('Kaydedilmiş veriler yüklendi:', data);
-                    alert('Önceki oturumunuzdan kaydedilmiş verileriniz yüklendi! ✅');
                     
                 } catch (error) {
                     console.error('Veri yükleme hatası:', error);
@@ -1692,7 +1691,6 @@ startMinigame = function() {
             URL.revokeObjectURL(url);
             
             console.log('Veriler JSON dosyası olarak kaydedildi:', data);
-            alert('Verileriniz JSON dosyası olarak indirildi! 📁');
         }
 
         function saveDataToDatabase() {
@@ -1769,7 +1767,6 @@ startMinigame = function() {
                 
                 transaction.oncomplete = function() {
                     console.log('Veriler IndexedDB\'ye başarıyla kaydedildi!');
-                    alert('Verileriniz veritabanına kaydedildi! �');
                     db.close();
                 };
                 
