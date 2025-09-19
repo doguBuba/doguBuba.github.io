@@ -417,6 +417,25 @@
                 opacity: 1;
             }
         }
+    @keyframes flick { from { transform:translateX(-50%) scaleY(1); } to { transform:translateX(-50%) scaleY(0.85); } }
+        /* ===== DEV SKIP BUTTON (GEÇİCİ) - RELEASE'TE KALDIR ===== */
+        #devSkipBtn {
+            position: fixed;
+            top: 6px;
+            right: 6px;
+            z-index: 9999;
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            cursor: pointer;
+            opacity: 0.85;
+        }
+        #devSkipBtn:hover { opacity:1; }
         .friend-dialog-box {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -594,6 +613,8 @@
     </style>
 </head>
 <body onload="loadDelay()">
+    <!-- DEV: Skip Button (GEÇİCİ - PROD'DA KALDIR) -->
+    <button id="devSkipBtn" onclick="devSkip()" title="Geçici Hızlı Geçiş">SKIP ▶</button>
     <div class="container">
         <h1>Yeni Yaşına Girenler İçin Yaş Hesaplama Programı</h1>
         <label for="year">Yıl:</label>
@@ -727,7 +748,7 @@
 
     <div id="countryScreen" class="modal">
         <div class="modal-content minigame">
-            <p>Bu ülkenin adı ne?</p>
+            <p>Bu ülkenin adı ne? (İlk harfini büyük yaz)</p>
             <div id="flag" class="flag-container">
                 <img id="flagImage" src="" alt="Bayrak" style="width: 120px; height: 90px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); object-fit: cover;">
             </div>
@@ -781,6 +802,17 @@
         </div>
     </div>
 
+    <div id="candleGame" class="modal">
+        <div class="modal-content minigame" id="candleContent">
+            <h2>🎂 Pasta Mumları</h2>
+            <div id="cakeArea" style="position:relative; width:260px; aspect-ratio:1024/1536; margin:0 auto; background:#fdebd0; border:2px solid #f7c793; border-radius:14px; box-shadow: inset 0 0 12px rgba(0,0,0,0.15); overflow:hidden;">
+                <div id="candleDigits" style="display:flex; justify-content:center; gap:36px;"></div>
+                <p id="candleHint" style="text-align:center; font-size:13px; margin-top:18px; opacity:0.85;">Mumları söndür!</p>
+                <div id="candleWin" style="display:none; text-align:center; margin-top:16px; font-weight:bold; color:#d35400;"> <br><button onclick="startPostCandleDialogs()" style="margin-top:10px;">Devam Et</button></div>
+            </div>
+        </div>
+    </div>
+
     <div id="friendDialog" class="modal friend-dialog-modal">
         <div class="modal-content friend-dialog-content">
             <div class="friend-dialog-box" onclick="closeFriendDialog()">
@@ -800,6 +832,46 @@
         let currentPart;
         let selectedDay = null;
         let numberInterval;
+        let birthdayMode = false;
+        // ==== DEV SKIP (GEÇİCİ) =====
+        function devSkip(){
+            try {
+                document.querySelectorAll('.modal').forEach(m=> m.style.display='none');
+                if(!selectedDay){
+                    document.getElementById('year').value = '2002';
+                    document.getElementById('yearValue').textContent = '2002';
+                    document.getElementById('month').value = '9';
+                    selectedDay = 21;
+                    document.getElementById('selectedDayDisplay').textContent='21';
+                }
+                const born = new Date(parseInt(document.getElementById('year').value), parseInt(document.getElementById('month').value)-1, selectedDay||1);
+                const now = new Date();
+                let age = now.getFullYear() - born.getFullYear();
+                const mDiff = now.getMonth() - born.getMonth();
+                if(mDiff < 0 || (mDiff===0 && now.getDate() < born.getDate())) age--;
+                realAge = age;
+                const isBirthday = (born.getFullYear()===2002 && born.getMonth()===8 && born.getDate()===21);
+                birthdayMode = isBirthday;
+                if(isBirthday){
+                    startCandleGame();
+                } else {
+                    document.getElementById('finalScreen').style.display='block';
+                    dialogParts = [
+                        {text:`(DEV) Yaşınız: ${realAge}`, emotion:'normal'},
+                        {text:'Bu ekran geliştirme modunda açıldı.', emotion:'surprised'}
+                    ];
+                    currentPart = 0;
+                    document.getElementById('finalResult').innerHTML = `
+                        <div class="dialog-box" onclick="nextDialogFinal()">
+                            <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                            <p>${dialogParts[0].text}</p>
+                        </div>
+                        <p class="click-text">tıkla</p>
+                    `;
+                }
+                scrollToTopSmooth();
+            } catch(err){ console.error('devSkip hata', err); }
+        }
 
         function scrollToTopSmooth() {
             try { window.scrollTo({top:0, behavior:'smooth'}); } catch(e) { window.scrollTo(0,0); }
@@ -1448,6 +1520,7 @@ startMinigame = function() {
             
             // Doğum günü kontrolü: 21 Eylül 2002
             const isBirthday = (userYear === 2002 && userMonth === 8 && userDay === 21);
+            birthdayMode = isBirthday;
 
             if (!isBirthday) {
                 ageDialogs = [
@@ -1465,8 +1538,7 @@ startMinigame = function() {
                     {text: `Yaşınız: ${realAge}`, emotion: "normal"},
                     {text: "Buraya kadar geldiğiniz için tebrik ederim.", emotion: "happy"},
                     {text: "Her zamanki gibi zeka, çeviklik ve yaratıcılığınızı konuşturdunuz!", emotion: "happy"},
-                    {text: "Bu mesajı görüyorsanız yaratıcım olan Doğukan Erkan'a ulaşınız.", emotion: "surprised"},
-                    {text: "Doğum gününüz kutlu olsun 🎉", emotion: "love"},
+                    {text: "Devam etmek için tıklayın.", emotion: "normal"},
                 ];
             }
 
@@ -1492,18 +1564,123 @@ startMinigame = function() {
                     <p class="click-text">tıkla</p>
                 `;
             } else {
-                // Son dialog bittiğinde final ekranını kapat
-                document.getElementById('finalScreen').style.display = 'none';
-                
-                // Otomatik olarak veritabanına kaydet (sessizce)
-                saveDataToDatabase();
-                
-                // Kısa bir mesaj göster
-                console.log('Program tamamlandı! Veriler otomatik olarak kaydedildi.');
-                
-                // Tüm input alanlarını ve sonuçları temizle
-                resetAllInputs();
+                if(birthdayMode){
+                    document.getElementById('finalScreen').style.display='none';
+                    startCandleGame();
+                } else {
+                    document.getElementById('finalScreen').style.display = 'none';
+                    saveDataToDatabase();
+                    console.log('Program tamamlandı! Veriler otomatik olarak kaydedildi.');
+                    resetAllInputs();
+                }
             }
+        }
+
+    /* ===== Birthday Candle Game ===== */
+    // Alev boyutu için ayarlanabilir sabitler (değiştir -> yeniden yükle):
+    const FLAME_W = 20;  // px
+    const FLAME_H = 28;  // px
+        let candleActive = false;
+        let candles = []; // {el, lit}
+        function startCandleGame(){
+            const cg = document.getElementById('candleGame');
+            const cakeArea = document.getElementById('cakeArea');
+            document.getElementById('candleDigits').innerHTML='';
+            candles = [];
+            // arka plan (cake.png kullanıcı ekledi)
+            cakeArea.style.background = `url('cake.png') center/cover no-repeat`;
+            // Alev pozisyonları (yüzde veya px). İki dijit: 2 ve 3.
+            // Gerekirse bu koordinatları ince ayarla.
+            const flamePositions = [
+                // Biraz yukarı alındı (~1%): Verdiğin koordinat artık alevin alt-orta noktası
+                {left:'36.62%', top:'15.6%'}, // 375x332
+                {left:'65.23%', top:'15.5%'}  // 668x330
+            ];
+            flamePositions.forEach(pos=>createFlame(pos));
+            cg.style.display='block';
+            scrollToTopSmooth();
+            attachFlamePointer();
+        }
+        function createFlame(pos){
+            const f = document.createElement('div');
+            f.className='cake-flame';
+            f.dataset.lit='1';
+            Object.assign(f.style, {
+                position:'absolute',
+                left: pos.left,
+                top: pos.top,
+                width: FLAME_W+'px',
+                height: FLAME_H+'px',
+                transform:'translate(-50%, -100%)',
+                background:'radial-gradient(ellipse at 50% 55%, #fff9c4 0%, #ffb300 55%, rgba(255,179,0,0.05) 100%)',
+                borderRadius:'50% 50% 50% 50%',
+                filter:'drop-shadow(0 0 8px #ffb300)',
+                animation:'flick 0.9s infinite ease-in-out alternate',
+                cursor:'pointer'
+            });
+            f.addEventListener('pointerdown', ()=>{extinguishFlame(f); checkAllOut();});
+            document.getElementById('cakeArea').appendChild(f);
+            candles.push({el:f});
+        }
+        function extinguishFlame(f){
+            if(f.dataset.lit==='0') return;
+            f.dataset.lit='0';
+            f.style.transition='opacity .35s, transform .35s';
+            f.style.opacity='0';
+            f.style.transform+=' scale(0.6)';
+            setTimeout(()=>f.remove(),450);
+        }
+        function attachFlamePointer(){
+            const area = document.getElementById('cakeArea');
+            area.addEventListener('pointermove', e=>{
+                if(e.buttons!==1) return;
+                const flame = e.target.closest('.cake-flame');
+                if(flame){ extinguishFlame(flame); checkAllOut(); }
+            });
+        }
+        function checkAllOut(){
+            if(candles.length && candles.every(c=>c.el.dataset.lit==='0')){
+                document.getElementById('candleWin').style.display='block';
+            }
+        }
+        function startPostCandleDialogs(){
+            document.getElementById('candleWin').style.display='none';
+            const content = document.getElementById('candleContent');
+            content.innerHTML = `
+                <h2>🎂 Ek Mesajlar</h2>
+                <div id="postCandleResult"></div>
+            `;
+            dialogParts = [
+                {text: 'Doğum günün kutlu olsun!', emotion: 'happy'},
+                {text: 'İyi ki doğdun, iyi ki varsın. 🎉', emotion: 'love'}
+            ];
+            currentPart = 0;
+            document.getElementById('postCandleResult').innerHTML = `
+                <div class="dialog-box" onclick="nextPostCandleDialog()">
+                    <div class="face">${emotions[dialogParts[0].emotion]}</div>
+                    <p>${dialogParts[0].text}</p>
+                </div>
+                <p class="click-text">tıkla</p>
+            `;
+        }
+        function nextPostCandleDialog(){
+            currentPart++;
+            if(currentPart < dialogParts.length){
+                document.getElementById('postCandleResult').innerHTML = `
+                    <div class="dialog-box" onclick="nextPostCandleDialog()">
+                        <div class="face">${emotions[dialogParts[currentPart].emotion]}</div>
+                        <p>${dialogParts[currentPart].text}</p>
+                    </div>
+                    <p class="click-text">tıkla</p>
+                `;
+            } else {
+                closeCandleGame();
+            }
+        }
+        function closeCandleGame(){
+            document.getElementById('candleGame').style.display='none';
+            saveDataToDatabase();
+            resetAllInputs();
         }
 
         function nextDialog() {
@@ -2175,7 +2352,6 @@ startMinigame = function() {
                     <div class=\"dialog-box\" onclick=\"nextDialogSwim()\">\n                        <div class=\"face\">${emotions[dialogParts[currentPart].emotion]}</div>\n                        <p>${dialogParts[currentPart].text}</p>\n                    </div>\n                    <p class=\"click-text\">tıkla</p>
                 `;
             } else {
-                // yüzme alanını geri getir (tekrar oynanırsa) ve bellek oyununa geç
                 const areaEl = document.getElementById('swimArea');
                 if(areaEl) areaEl.style.display='block';
                 document.getElementById('swimGameScreen').style.display='none';
